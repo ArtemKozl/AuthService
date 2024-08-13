@@ -1,0 +1,13 @@
+@OnionTest_HostAddress = http://localhost:5210
+
+GET https://localhost:7290/Users/testuser
+
+###
+POST https://localhost:7290/Users/login
+Host: localhost:7290
+Content-Type: application/json
+
+{
+  "email": "string",
+  "password": "string"
+}
