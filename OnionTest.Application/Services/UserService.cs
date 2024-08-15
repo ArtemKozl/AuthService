@@ -64,26 +64,37 @@ namespace OnionTest.Application.Services
             return tokens;
         }
 
-        public async Task<string> GetUsernameFromToken(string token)
+        public async Task<Users> GetUserByIdFromToken(string token)
         {
             try
             {
                 var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
                 var jwtToken = jwtSecurityTokenHandler.ReadJwtToken(Convert.ToString(token));
 
-                var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "userId")?.Value;
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "userId");
 
-                Users user = await _userRepository.GetByid(Convert.ToInt32(userId));
+                if (userIdClaim != null)
+                {
+                    int userId = Convert.ToInt32(userIdClaim.Value);
 
-                return user.UserName;
+
+                    Users user = await _userRepository.GetByid(userId);
+
+                    return user;
+                }
+                else
+                {
+                    throw new Exception("User ID claim not found in the token.");
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error processing token: {ex.Message}");
+                throw;
             }
-
-            return "null";
         }
+
 
         public async Task<string> GetUserById(int id)
         {

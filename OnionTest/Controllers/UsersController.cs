@@ -61,9 +61,15 @@ namespace OnionTest.Controllers
             if(token==null)
                 return Results.Unauthorized();
 
-            string userName = await _userService.GetUsernameFromToken(token);
+            var userInfo = await _userService.GetUserByIdFromToken(token);
 
-            return Results.Ok(userName);
+            Dictionary<string, object> user = new()
+            {
+                { "Id",  userInfo.Id},
+                { "UserName", userInfo.UserName}
+            };
+
+            return Results.Ok(user);
         }
 
         [AllowAnonymous]
